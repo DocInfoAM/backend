@@ -2,6 +2,7 @@ import express from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import cors from "cors";
+import swagger from "./utils/swagger";
 
 import * as middlewares from "./middlewares";
 import api from "./api";
@@ -23,6 +24,7 @@ app.get<{}, MessageResponse>("/", (req, res) => {
 });
 
 app.use("/api/v1", api);
+app.use(swagger);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

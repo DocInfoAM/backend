@@ -1,38 +1,39 @@
-import { Express, Request, Response } from "express";
-import swaggerJSDoc from "swagger-jsdoc";
 import { Router } from "express";
 import swaggerUi from "swagger-ui-express";
+import * as OpenApiValidator from "express-openapi-validator";
+import { userPaths } from "../api/user/user.swagger";
+import { OpenAPIV3 } from "express-openapi-validator/dist/framework/types";
 
-const options: swaggerJSDoc.OAS3Options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "DocInfo Express API",
-            version: "0.1.0",
-            description: "CRUD API fro DocInfo project",
-        },
-        components: {
-            securitySchemes: {
-                bearerAuth: {
-                    type: "http",
-                    scheme: "bearer",
-                    bearerFormat: "JWT",
-                },
-            },
-        },
-        servers: [
-            {
-                url: "http://localhost:5000",
-            },
-        ],
+function loadPaths(pathObject: OpenAPIV3.PathsObject) {
+    for (const [path, value] of Object.entries(pathObject)) {
+        apiSpec.paths[path] = value;
+    }
+}
+
+const apiSpec: OpenAPIV3.Document = {
+    openapi: "3.0.0",
+    info: {
+        title: "DocInfo API Spec",
+        version: "1.0.0",
     },
-    apis: ["./src/api/**/*.routes.ts"],
+    servers: [
+        {
+            url: "http://localhost:5000",
+        },
+    ],
+    paths: {},
 };
 
-const specs = swaggerJSDoc(options);
+loadPaths(userPaths);
 
 const router = Router();
 
-router.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+router.use("/docs", swaggerUi.serve, swaggerUi.setup(apiSpec));
+router.use(
+    OpenApiValidator.middleware({
+        apiSpec,
+        validateRequests: true,
+    }),
+);
 
 export default router;

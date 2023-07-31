@@ -7,8 +7,12 @@ import swagger from "./utils/swagger";
 import * as middlewares from "./middlewares";
 import api from "./api";
 import MessageResponse from "./interfaces/MessageResponse";
+import { initDatabase } from "./db";
+import { clinicRouter } from "./api/clinic/clinic.routes";
 
 require("dotenv").config();
+
+initDatabase();
 
 const app = express();
 
@@ -23,8 +27,8 @@ app.get<{}, MessageResponse>("/", (req, res) => {
     });
 });
 
+app.use(swagger); // swagger before api middleware. Иначе не сработает валидация полей
 app.use("/api/v1", api);
-app.use(swagger);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

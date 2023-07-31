@@ -3,6 +3,7 @@ import swaggerUi from "swagger-ui-express";
 import * as OpenApiValidator from "express-openapi-validator";
 import { userPaths } from "../api/user/user.swagger";
 import { OpenAPIV3 } from "express-openapi-validator/dist/framework/types";
+import { clinicPaths } from "../api/clinic/clinic.swagger";
 
 function loadPaths(pathObject: OpenAPIV3.PathsObject) {
     for (const [path, value] of Object.entries(pathObject)) {
@@ -25,6 +26,8 @@ const apiSpec: OpenAPIV3.Document = {
 };
 
 loadPaths(userPaths);
+loadPaths(clinicPaths);
+// console.log(apiSpec);
 
 const router = Router();
 

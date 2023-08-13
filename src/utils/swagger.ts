@@ -27,7 +27,6 @@ const apiSpec: OpenAPIV3.Document = {
 
 loadPaths(userPaths);
 loadPaths(clinicPaths);
-// console.log(apiSpec);
 
 const router = Router();
 

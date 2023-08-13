@@ -31,5 +31,18 @@ export const userPaths: OpenAPIV3.PathsObject = {
                 },
             },
         },
+        get: {
+            summary: "Получшение пользоватетей",
+            responses: {
+                200: {
+                    description: "Успешный ответ",
+                    content: {
+                        "application/json": {
+                            schema: SuccessResponseSchema as OpenAPIV3.SchemaObject,
+                        },
+                    },
+                },
+            },
+        },
     },
 };

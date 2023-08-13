@@ -1,13 +1,12 @@
 {
-    "name": "logic",
+    "name": "docinfo-backend",
     "version": "1.0.0",
     "description": "",
     "main": "src/index.ts",
     "scripts": {
         "build": "npx tsc",
         "start": "node dist/src/index.js",
-        "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/index.js\"",
-        "vercel-build": "echo hello"
+        "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/src/index.js\""
     },
     "keywords": [],
     "author": "",

@@ -8,7 +8,6 @@ import * as middlewares from "./middlewares";
 import api from "./api";
 import MessageResponse from "./interfaces/MessageResponse";
 import { initDatabase } from "./db";
-import { clinicRouter } from "./api/clinic/clinic.routes";
 
 require("dotenv").config();
 

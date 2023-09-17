@@ -1,20 +1,11 @@
 import express from "express";
 
-import MessageResponse from "../interfaces/MessageResponse";
-import emojis from "./emojis";
-import { userRouter } from "./user/user.routes";
-import { clinicRouter } from "./clinic/clinic.routes";
+import { userRouter } from "./users/routes/user.routes";
+import {authRouter} from "./auth";
 
 const router = express.Router();
 
-router.get<{}, MessageResponse>("/", (req, res) => {
-    res.json({
-        message: "API - 👋🌎🌍🌏",
-    });
-});
-
-router.use("/emojis", emojis);
 router.use("/users", userRouter);
-router.use("/clinics", clinicRouter);
+router.use("/auth", authRouter);
 
 export default router;

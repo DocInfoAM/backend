@@ -1,0 +1,2 @@
+export const JWT_ACCESS_EXPIRE_TIME = 1000 * 60 * 60
+export const JWT_REFRESH_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 30

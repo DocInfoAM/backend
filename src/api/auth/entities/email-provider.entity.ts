@@ -14,5 +14,5 @@ export class EmailProviderEntity {
     email: string
 
     @Column()
-    password: string
+    passwordHash: string
 }

@@ -1,7 +1,7 @@
 import express from "express";
 import {validation} from "../../../handlers";
 import {registerByEmailSchema} from "../schemas";
-import {registerByEmail} from "../handlers";
+import {loginByEmail, registerByEmail} from "../handlers";
 
 export const authRouter = express.Router();
 
@@ -11,4 +11,11 @@ authRouter.post(
     registerByEmailSchema,
     validation,
     registerByEmail
+);
+
+authRouter.post(
+  '/login-by-email',
+  registerByEmailSchema,
+  validation,
+  loginByEmail
 );

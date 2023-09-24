@@ -1,10 +1,13 @@
-import {Entity, Column, JoinColumn, PrimaryGeneratedColumn, ManyToOne} from "typeorm"
+import {Entity, Column, JoinColumn, ManyToOne, PrimaryColumn} from "typeorm"
 import {User} from "../../users";
 
 @Entity()
 export class TokenEntity {
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryColumn()
+    token: string
+
+    @Column({nullable: true})
+    session: string
 
     @ManyToOne(() => User)
     @JoinColumn({name: 'userId'})
@@ -12,7 +15,4 @@ export class TokenEntity {
 
     @Column()
     tokenType: string
-
-    @Column()
-    token: string
 }

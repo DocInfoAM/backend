@@ -7,6 +7,7 @@ import * as middlewares from "./middlewares";
 import api from "./api";
 import { initDatabase } from "./db";
 import cookieParser from "cookie-parser";
+import {validation} from "./handlers";
 
 require("dotenv").config();
 
@@ -19,6 +20,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser())
+app.use(validation)
 
 app.use("/api", api);
 

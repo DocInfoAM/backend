@@ -1,39 +1,53 @@
 import {UserJwtDataInterface} from "../interfaces";
-import { sign } from "jsonwebtoken"
+import {sign, verify} from "jsonwebtoken"
 import {tokenRepository} from "../repositories";
 import {JWT_ACCESS_EXPIRE_TIME, JWT_REFRESH_EXPIRE_TIME} from "../constants";
 import {error2msg} from "../../../utils";
+import express from "express";
 
 
-export async function generateAccessToken(data: UserJwtDataInterface) {
-  return sign(data, process.env.JWT_ACCESS_SECRET ?? 'access_secret', {
-    expiresIn: JWT_ACCESS_EXPIRE_TIME
+export async function generateAndSaveToken(data: UserJwtDataInterface, tokenType: 'access' | 'refresh') {
+
+  await findAndDelete(data, tokenType)
+
+  const token = sign(data, process.env[`JWT_${tokenType.toUpperCase()}_SECRET`] ?? `${tokenType}_secret`, {
+    expiresIn: tokenType === 'access' ? JWT_ACCESS_EXPIRE_TIME : JWT_REFRESH_EXPIRE_TIME
   })
+
+  await tokenRepository.insert({token, tokenType, user: {id: data.userId}})
+  return token
 }
 
-export async function generateRefreshToken(data: UserJwtDataInterface) {
-  return sign(data, process.env.JWT_REFRESH_SECRET ?? 'refresh_secret', {
-    expiresIn: JWT_REFRESH_EXPIRE_TIME
+export async function generateAndSaveAccess(refresh: string) {
+
+  const {userId, email, session} = verifyRefresh(refresh) as UserJwtDataInterface
+
+  const token = sign({userId, email, session}, process.env[`JWT_ACCESS_SECRET`] ?? `access_secret`, {
+    expiresIn: JWT_ACCESS_EXPIRE_TIME
   })
+
+  await findAndDelete({userId, session, email}, 'access')
+
+  await tokenRepository.insert({token, tokenType: 'access', user: {id: userId}})
+  return {access: token}
+}
+
+async function findAndDelete(data: UserJwtDataInterface, tokenType: 'refresh' | 'access') {
+  const existing = await tokenRepository.findOneBy({
+    tokenType: tokenType,
+    session: data.session,
+    user: {id: data.userId}
+  })
+
+  console.log(`find and delete: find token: ${JSON.stringify(existing)}`)
+
+  if (existing) await tokenRepository.delete({token: existing.token})
 }
 
 export async function generateAndSaveTokenPair(data: UserJwtDataInterface) {
   try {
-    const refresh = await generateRefreshToken(data)
-    const access = await generateAccessToken(data)
-
-    // looking for existing tokens for the user
-    const isRefreshExist = await tokenRepository.exist({where: {tokenType: 'refresh', user: {id: data.userId}}})
-    if (isRefreshExist) {
-      await tokenRepository.delete({tokenType: 'refresh', user: {id: data.userId}})
-    }
-    const isAccessExist = await tokenRepository.exist({where: {tokenType: 'access', user: {id: data.userId}}})
-    if (isAccessExist) {
-      await tokenRepository.delete({tokenType: 'access', user: {id: data.userId}})
-    }
-
-    await tokenRepository.insert({token: refresh, tokenType: 'refresh', user: {id: data.userId}})
-    await tokenRepository.insert({token: access, tokenType: 'access', user: {id: data.userId}})
+    const refresh = await generateAndSaveToken(data, 'refresh')
+    const access = await generateAndSaveToken(data, 'access')
 
     return {
       access: access,
@@ -43,4 +57,21 @@ export async function generateAndSaveTokenPair(data: UserJwtDataInterface) {
     throw Error(`Error during generating/saving tokens | => ${error2msg(error)}`)
   }
 
+}
+
+export function verifyAccess(token: string) {
+  try {
+    return verify(token, process.env.JWT_ACCESS_SECRET ?? 'access_secret')
+  } catch (error) {
+    throw Error(`Error verify access token: | => ${error2msg(error)}`)
+  }
+
+}
+
+export function verifyRefresh(token: string) {
+  try {
+    return verify(token, process.env.JWT_REFRESH_SECRET ?? 'refresh_secret')
+  } catch (error) {
+    throw Error(`Error verify refresh token: | => ${error2msg(error)}`)
+  }
 }

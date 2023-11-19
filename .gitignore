@@ -6,3 +6,7 @@ dist
 
 db.sqlite
 .vscode
+.idea
+
+prisma/docker/postgres/.env
+docker/postgres/.env

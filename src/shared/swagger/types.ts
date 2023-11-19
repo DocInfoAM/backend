@@ -1,12 +1,12 @@
-import { Type } from "@sinclair/typebox";
+import { Type } from '@sinclair/typebox';
 
 const SuccessResponseSchema = Type.Strict(
-    Type.Object(
-        {
-            message: Type.String(),
-        },
-        { additionalProperties: false },
-    ),
+  Type.Object(
+    {
+      message: Type.String(),
+    },
+    { additionalProperties: false },
+  ),
 );
 
 export { SuccessResponseSchema };

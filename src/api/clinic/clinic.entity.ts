@@ -1,14 +1,14 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { TClinic } from "./clinic.types";
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { TClinic } from './clinic.types';
 
 @Entity()
 export class Clinic implements TClinic {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    address: string;
+  @Column()
+  address: string;
 }

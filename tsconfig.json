@@ -17,6 +17,7 @@
     "noFallthroughCasesInSwitch": false,
     "declaration": true,
     "removeComments": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true
   }
 }

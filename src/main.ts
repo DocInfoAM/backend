@@ -1,10 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import appConfig from '../config/app.config';
-import { SwaggerModule } from '@nestjs/swagger';
-import swaggerConfig from '../config/swagger.config';
+import appConfig from '../config/app/app.config';
+import { setupSwagger } from '../config/open-api/swagger.config';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
@@ -13,16 +12,9 @@ async function bootstrap() {
   app.useGlobalInterceptors();
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors({
-    allowedHeaders: [
-      'content-type',
-      'Access-Control-Allow-Credentials',
-      'Origin',
-      'X-Requested-With',
-      'Authorization',
-      'Accept',
-    ],
+    allowedHeaders: appConfig().allowedHeaders,
     origin: appConfig().origins,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    methods: appConfig().methods,
     credentials: true,
   });
   app.use(bodyParser.json({ limit: '1mb' }));
@@ -31,8 +23,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   if (process.env.VERCEL_NODE_ENV !== 'production') {
-    const document = SwaggerModule.createDocument(app, swaggerConfig());
-    SwaggerModule.setup('api-doc', app, document);
+    setupSwagger(app);
   }
 
   const port = appConfig().port;
